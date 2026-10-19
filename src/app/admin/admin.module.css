@@ -1,0 +1,11 @@
+.section { display: flex; flex-direction: column; gap: 18px; margin-bottom: 44px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.card {
+  display: flex; flex-direction: column; gap: 4px;
+  border: 1px solid var(--line); background: var(--surface); border-radius: 12px;
+  padding: 16px; color: var(--ink); text-decoration: none;
+}
+.card:hover { border-color: var(--ink-soft); }
+.card b { font-size: 16px; }
+.card span { font-size: 13px; color: var(--ink-soft); }

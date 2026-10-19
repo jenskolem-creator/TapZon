@@ -1,0 +1,69 @@
+/* Kundesiden har alltid lyst uttrykk, uansett telefonens tema: den skal se ut som butikkens egen side. */
+.page {
+  --store-accent: #6b2433;
+  --paper: #fbfbf9;
+  --text: #17171a;
+  --text-soft: #6a6a70;
+  --hair: #e4e4de;
+  background: var(--paper);
+  color: var(--text);
+  min-height: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding-block: 26px 32px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px));
+  padding-right: max(18px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  color-scheme: light;
+}
+
+.store {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--store-accent);
+}
+.logo { max-height: 40px; max-width: 160px; object-fit: contain; display: inline-block; }
+
+.product { text-align: center; }
+.product small { display: block; font-size: 12.5px; color: var(--text-soft); }
+.product h1 { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1.08; margin: 2px 0 0; text-wrap: balance; }
+
+.look { display: flex; flex-direction: column; gap: 12px; }
+.sep { height: 1px; background: var(--hair); margin-bottom: 10px; }
+
+.image {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e8e6e0;
+}
+.image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.noImage { width: 100%; height: 100%; display: grid; place-items: center; color: #8a8a90; font-size: 13px; }
+.badge {
+  position: absolute; left: 10px; top: 10px;
+  font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: #fff; background: rgba(15, 15, 18, .55); padding: 4px 8px; border-radius: 3px;
+}
+
+.caption { margin: 0; font-family: var(--display); font-size: 21px; line-height: 1.3; }
+
+.pairsLabel {
+  display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-soft); margin-bottom: 8px;
+}
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--hair); background: #fff; border-radius: 999px;
+  padding: 4px 11px 4px 4px; font-size: 13px; font-weight: 600;
+}
+.chip i { width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .14); }
+
+.foot { text-align: center; font-size: 11px; color: #8a8a90; margin-top: auto; padding-top: 10px; }
