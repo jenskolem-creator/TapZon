@@ -5,14 +5,17 @@ import { setNewPassword } from "../auth-actions";
 export const metadata = { title: "Lag passord · TapZon" };
 
 export default async function NewPasswordPage() {
-  const { user } = await requireUser();
+  const { user } = await requireUser({ allowTempPassword: true });
+  const firstTime = Boolean(user.user_metadata?.must_change_password);
 
   return (
     <main className="wrap narrow" style={{ paddingTop: 64 }}>
       <div className="brand">TapZon</div>
       <h1 style={{ margin: "10px 0 6px" }}>Lag passord</h1>
       <p className="hint" style={{ marginBottom: 24 }}>
-        For {user.email}. Du bruker dette passordet neste gang du logger inn.
+        {firstTime
+          ? `Velkommen! Du logget inn med et midlertidig passord. Lag ditt eget passord for ${user.email} før du fortsetter.`
+          : `For ${user.email}. Du bruker dette passordet neste gang du logger inn.`}
       </p>
       <div className="panel">
         <SimpleForm

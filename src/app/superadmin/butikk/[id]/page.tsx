@@ -6,7 +6,7 @@ import { cardUrl } from "@/lib/env";
 import { MODULE_NAMES, type ModuleType } from "@/lib/types";
 import { AdminHeader } from "@/components/AdminHeader";
 import { SimpleForm } from "@/components/SimpleForm";
-import { addCards, addMember, removeMember, setCardActive } from "../../actions";
+import { addCards, addMember, removeMember, resetMemberPassword, setCardActive } from "../../actions";
 import styles from "../../superadmin.module.css";
 
 export const metadata = { title: "Butikk · Superadmin · TapZon" };
@@ -32,7 +32,7 @@ export default async function SuperadminBusinessPage(props: PageProps<"/superadm
   const people = await Promise.all(
     (members ?? []).map(async (m) => {
       const { data } = await admin.auth.admin.getUserById(m.user_id);
-      return { ...m, email: data.user?.email ?? "(ukjent)", confirmed: Boolean(data.user?.last_sign_in_at) };
+      return { ...m, email: data.user?.email ?? "(ukjent)", pending: Boolean(data.user?.user_metadata?.must_change_password) };
     }),
   );
 
@@ -118,13 +118,22 @@ export default async function SuperadminBusinessPage(props: PageProps<"/superadm
               {people.map((p) => (
                 <li key={p.user_id}>
                   <span>
-                    {p.email} <span className={styles.off}>· {p.role === "owner" ? "eier" : "ansatt"}{!p.confirmed && " · invitert"}</span>
+                    {p.email} <span className={styles.off}>· {p.role === "owner" ? "eier" : "ansatt"}{p.pending && " · har ikke laget eget passord"}</span>
                   </span>
                   <form action={removeMember}>
                     <input type="hidden" name="business_id" value={id} />
                     <input type="hidden" name="user_id" value={p.user_id} />
                     <button className="linkbtn" type="submit">Fjern</button>
                   </form>
+                  <div style={{ flexBasis: "100%" }}>
+                    <SimpleForm
+                      action={resetMemberPassword}
+                      hidden={{ user_id: p.user_id }}
+                      fields={[]}
+                      submitLabel="Gi nytt midlertidig passord"
+                      compact
+                    />
+                  </div>
                 </li>
               ))}
             </ul>

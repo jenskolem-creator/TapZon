@@ -8,11 +8,15 @@ export type Membership = {
   businesses: { id: string; name: string; logo_path: string | null; accent_color: string | null };
 };
 
-/** Krever innlogget bruker. Sender til innloggingssiden ellers. */
-export async function requireUser() {
+/**
+ * Krever innlogget bruker. Sender til innloggingssiden ellers.
+ * Har brukeren fortsatt et midlertidig passord, sendes de til «Lag passord» først.
+ */
+export async function requireUser({ allowTempPassword = false } = {}) {
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect("/admin/logg-inn");
+  if (!allowTempPassword && data.user.user_metadata?.must_change_password) redirect("/admin/nytt-passord");
   return { supabase, user: data.user };
 }
 

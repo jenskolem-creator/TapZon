@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { requireSuperadmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
@@ -11,23 +10,49 @@ export type FormState = { error?: string; ok?: string } | undefined;
 
 const MODULES: ModuleType[] = ["style", "start", "loyalty"];
 
-/** Finner brukeren med denne e-posten, eller inviterer en ny (de får en e-post for å lage passord). */
-async function findOrInviteUser(email: string): Promise<{ id: string; invited: boolean }> {
-  const admin = createAdminClient();
-  const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${env.siteUrl}/auth/confirm?next=/admin/nytt-passord`,
-  });
-  if (!error && data.user) return { id: data.user.id, invited: true };
+/** Lett lesbart midlertidig passord, f.eks. "k7mq-x4tp-9wcr". Butikkeieren bytter det ved første innlogging. */
+function tempPassword() {
+  const alphabet = "abcdefghjkmnpqrstuvwxyz23456789";
+  const bytes = crypto.getRandomValues(new Uint8Array(12));
+  const chars = Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
+  return `${chars.slice(0, 4)}-${chars.slice(4, 8)}-${chars.slice(8, 12)}`;
+}
 
-  // Finnes allerede: slå opp brukeren.
+async function findUserByEmail(email: string) {
+  const admin = createAdminClient();
   for (let page = 1; page <= 20; page++) {
-    const { data: list, error: listError } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
-    if (listError) break;
-    const hit = list.users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
-    if (hit) return { id: hit.id, invited: false };
-    if (list.users.length < 1000) break;
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+    if (error) throw error;
+    const hit = data.users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+    if (hit) return hit;
+    if (data.users.length < 1000) return null;
   }
-  throw new Error(error?.message ?? "Kunne ikke invitere brukeren");
+  return null;
+}
+
+/**
+ * Finner brukeren med denne e-posten, eller lager en ny med midlertidig passord.
+ * Ingen e-post sendes: du gir passordet til butikkeieren selv.
+ */
+async function findOrCreateUser(email: string): Promise<{ id: string; password: string | null }> {
+  const existing = await findUserByEmail(email);
+  if (existing) return { id: existing.id, password: null };
+
+  const password = tempPassword();
+  const { data, error } = await createAdminClient().auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { must_change_password: true },
+  });
+  if (error || !data.user) throw new Error(error?.message ?? "Kunne ikke lage brukeren");
+  return { id: data.user.id, password };
+}
+
+function loginMessage(email: string, password: string | null) {
+  return password
+    ? `Konto laget for ${email}. Midlertidig passord: ${password} (vises bare nå, noter det). Innlogging: ${env.siteUrl}/admin`
+    : `${email} hadde allerede konto og har nå tilgang.`;
 }
 
 async function createCards(businessId: string, count: number, moduleType: ModuleType) {
@@ -55,15 +80,14 @@ export async function createBusiness(_prev: FormState, formData: FormData): Prom
   if (error) return { error: "Kunne ikke opprette butikken." };
 
   try {
-    const user = await findOrInviteUser(email);
+    const user = await findOrCreateUser(email);
     await admin.from("business_members").insert({ business_id: business.id, user_id: user.id, role: "owner" });
     if (count > 0) await createCards(business.id, count, "style");
+    revalidatePath("/superadmin");
+    return { ok: `${name} er opprettet med ${count} brikker. ${loginMessage(email, user.password)}` };
   } catch (e) {
     return { error: `Butikken ble opprettet, men noe feilet: ${(e as Error).message}` };
   }
-
-  revalidatePath("/superadmin");
-  redirect(`/superadmin/butikk/${business.id}`);
 }
 
 export async function addCards(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -89,13 +113,13 @@ export async function addMember(_prev: FormState, formData: FormData): Promise<F
   const role = formData.get("role") === "staff" ? "staff" : "owner";
   if (!/^\S+@\S+\.\S+$/.test(email)) return { error: "Skriv inn en gyldig e-post." };
   try {
-    const user = await findOrInviteUser(email);
+    const user = await findOrCreateUser(email);
     const { error } = await createAdminClient()
       .from("business_members")
       .upsert({ business_id: businessId, user_id: user.id, role });
     if (error) throw error;
     revalidatePath(`/superadmin/butikk/${businessId}`);
-    return { ok: user.invited ? `Invitasjon sendt til ${email}.` : `${email} har nå tilgang.` };
+    return { ok: loginMessage(email, user.password) };
   } catch (e) {
     return { error: (e as Error).message };
   }
@@ -121,4 +145,17 @@ export async function setCardActive(formData: FormData) {
     .eq("id", String(formData.get("card_id")))
     .eq("business_id", businessId);
   revalidatePath(`/superadmin/butikk/${businessId}`);
+}
+
+/** Gir en person et nytt midlertidig passord, for eksempel hvis de har glemt sitt. */
+export async function resetMemberPassword(_prev: FormState, formData: FormData): Promise<FormState> {
+  await requireSuperadmin();
+  const userId = String(formData.get("user_id"));
+  const password = tempPassword();
+  const { data, error } = await createAdminClient().auth.admin.updateUserById(userId, {
+    password,
+    user_metadata: { must_change_password: true },
+  });
+  if (error) return { error: "Kunne ikke lage nytt passord." };
+  return { ok: `Nytt midlertidig passord for ${data.user.email}: ${password}` };
 }

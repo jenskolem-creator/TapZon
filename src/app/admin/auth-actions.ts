@@ -49,7 +49,7 @@ export async function setNewPassword(_prev: FormState, formData: FormData): Prom
   if (password !== repeat) return { error: "Passordene er ikke like." };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.updateUser({ password });
+  const { error } = await supabase.auth.updateUser({ password, data: { must_change_password: false } });
   if (error) {
     if (error.code === "same_password") return { error: "Velg et annet passord enn det gamle." };
     return { error: "Kunne ikke lagre passordet. Åpne lenken i e-posten på nytt." };

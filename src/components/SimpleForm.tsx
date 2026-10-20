@@ -19,11 +19,14 @@ export function SimpleForm({
   fields,
   submitLabel,
   hidden,
+  compact,
 }: {
   action: (prev: FormState, data: FormData) => Promise<FormState>;
   fields: Field[];
   submitLabel: string;
   hidden?: Record<string, string>;
+  /** Liten lenkeknapp i stedet for stor knapp (for handlinger i lister). */
+  compact?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
 
@@ -57,7 +60,9 @@ export function SimpleForm({
       ))}
       {state?.error && <p className="msg msg-error" role="alert">{state.error}</p>}
       {state?.ok && <p className="msg msg-ok" role="status">{state.ok}</p>}
-      <button className="btn" type="submit" disabled={pending}>{pending ? "Vent litt …" : submitLabel}</button>
+      <button className={compact ? "linkbtn" : "btn"} type="submit" disabled={pending} style={compact ? { alignSelf: "flex-start" } : undefined}>
+        {pending ? "Vent litt …" : submitLabel}
+      </button>
     </form>
   );
 }

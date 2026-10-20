@@ -22,6 +22,9 @@ export default function ForgotPasswordPage() {
       <p style={{ marginTop: 16 }}>
         <Link className="linkbtn" href="/admin/logg-inn">&larr; Tilbake til innlogging</Link>
       </p>
+      <p className="hint" style={{ marginTop: 24 }}>
+        Får du ingen e-post i løpet av noen minutter? Kontakt TapZon, så får du et nytt midlertidig passord.
+      </p>
     </main>
   );
 }

@@ -26,21 +26,14 @@ En ny butikk er bare nye rader i databasen. Ingen ny kode.
 3. Gå til **Authentication → URL Configuration**:
    - **Site URL**: adressen siden skal ligge på, for eksempel `https://tapzon.no`. Mens du tester: Vercel-adressen, for eksempel `https://tapzon.vercel.app`.
    - **Redirect URLs**: legg til `https://DIN-ADRESSE/**`.
-4. Gå til **Authentication → Emails → Templates** og endre to maler, slik at lenkene virker:
-   - **Invite user**: bytt ut lenken med
-     `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/admin/nytt-passord`
-   - **Reset password**: bytt ut lenken med
-     `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/admin/nytt-passord`
-
-   Du kan gjerne skrive teksten i malene på norsk også.
-5. Gå til **Authentication → Sign In / Providers** og slå **av** «Allow new users to sign up». Bare du skal kunne lage kontoer.
-6. Lag din egen bruker: **Authentication → Users → Add user** med e-posten og passordet ditt.
-7. Gjør deg selv til plattform-admin. I **SQL Editor**, kjør (med din e-post):
+4. Gå til **Authentication → Sign In / Providers** og slå **av** «Allow new users to sign up». Bare du skal kunne lage kontoer.
+5. Lag din egen bruker: **Authentication → Users → Add user** med e-posten og passordet ditt.
+6. Gjør deg selv til plattform-admin. I **SQL Editor**, kjør (med din e-post):
    ```sql
    insert into public.platform_admins (user_id)
    select id from auth.users where email = 'din@epost.no';
    ```
-8. Hent nøklene under **Project Settings → API Keys**: prosjekt-URL, publishable key og secret key.
+7. Hent nøklene under **Project Settings → API Keys**: prosjekt-URL, publishable key og secret key.
 
 ### 2. Vercel (legger siden ut på nett)
 
@@ -57,8 +50,16 @@ En ny butikk er bare nye rader i databasen. Ingen ny kode.
 
 1. Gå til `https://DIN-ADRESSE/superadmin` og logg inn.
 2. Fyll inn butikkens navn, eierens e-post og antall brikker → **Opprett butikk**.
-3. Eieren får en e-post, lager passord og kan begynne å fylle inn plaggene.
-4. Kopier adressene fra butikksiden og skriv dem på NFC-kortene med appen **NFC Tools** (Write → Add a record → URL).
+3. Du får et **midlertidig passord** på skjermen. Gi det til butikkeieren sammen med adressen `/admin`.
+   Første gang de logger inn, må de lage sitt eget passord.
+4. Glemmer noen passordet: åpne butikken i `/superadmin` og trykk **Gi nytt midlertidig passord**.
+5. Kopier adressene fra butikksiden og skriv dem på NFC-kortene med appen **NFC Tools** (Write → Add a record → URL).
+
+## E-post (valgfritt, senere)
+
+Appen trenger ikke e-post. Supabase sin innebygde e-post sender bare til folk i ditt Supabase-team,
+så «Glemt passord?» virker for butikkeiere først når du kobler til en egen e-posttjeneste
+(**Authentication → Emails → Set up SMTP**, for eksempel Resend eller Gmail).
 
 ## Kjøre lokalt (for utvikling)
 
