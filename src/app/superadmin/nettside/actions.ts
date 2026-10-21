@@ -17,9 +17,9 @@ export async function saveSiteContent(content: SiteContent): Promise<{ ok: true 
     .upsert({ id: "main", data, updated_at: new Date().toISOString() });
   if (error) {
     if (error.code === "42P01" || error.message.includes("site_content")) {
-      return { ok: false, error: "Tabellen for nettsideinnhold mangler. Kjør filen 0002_site_content.sql i Supabase først." };
+      return { ok: false, error: `Tabellen for nettsideinnhold mangler. Kjør filen 0002_site_content.sql i Supabase først. (${error.message})` };
     }
-    return { ok: false, error: "Kunne ikke lagre. Prøv igjen." };
+    return { ok: false, error: `Kunne ikke lagre: ${error.message}` };
   }
 
   revalidatePath("/");

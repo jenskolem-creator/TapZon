@@ -16,3 +16,7 @@ create policy "alle kan lese nettsideinnhold" on public.site_content
 
 revoke all on public.site_content from anon, authenticated;
 grant select on public.site_content to anon, authenticated;
+grant all on public.site_content to service_role;
+
+-- Be Supabase oppdage den nye tabellen med en gang.
+notify pgrst, 'reload schema';
