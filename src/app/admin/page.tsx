@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getMemberships, isPlatformAdmin, requireUser } from "@/lib/auth";
 import { AdminHeader } from "@/components/AdminHeader";
 import { MODULE_NAMES, type ModuleType } from "@/lib/types";
@@ -19,6 +20,8 @@ type CardRow = {
 export default async function AdminHome() {
   const { supabase, user } = await requireUser();
   const [memberships, admin] = await Promise.all([getMemberships(), isPlatformAdmin()]);
+  // Du som plattformeier uten egen butikk skal rett til oversikten over alle butikker.
+  if (admin && memberships.length === 0) redirect("/superadmin");
 
   const { data: cards, error } = await supabase
     .from("cards")
