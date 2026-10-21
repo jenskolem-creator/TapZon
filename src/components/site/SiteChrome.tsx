@@ -27,7 +27,7 @@ export function SiteHeader() {
           <Link href="/#slik">Slik jobber vi</Link>
           <Link href="/#kontakt">Kontakt</Link>
         </nav>
-        <Link href="/admin" className={styles.loginBtn}>Logg inn som butikkeier</Link>
+        <Link href="/admin" className={styles.loginBtn}>Logg inn som bedrift</Link>
       </div>
     </header>
   );
@@ -75,7 +75,7 @@ export function SiteFooter({ footer }: { footer: SiteContent["footer"] }) {
       <div className={`${styles.inner} ${styles.footerInner}`}>
         <span className={styles.brand}>TapZon</span>
         <span>{footer.tagline}</span>
-        <Link href="/admin">Logg inn som butikkeier</Link>
+        <Link href="/admin">Logg inn som bedrift</Link>
       </div>
     </footer>
   );
