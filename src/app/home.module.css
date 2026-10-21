@@ -158,3 +158,20 @@
 .footer { border-top: 1px solid var(--line); padding-block: 28px calc(28px + env(safe-area-inset-bottom, 0px)); }
 .footerInner { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; justify-content: space-between; font-size: 14px; color: var(--ink-soft); }
 .footerInner a { color: var(--ink); font-weight: 600; }
+
+/* ── «Rediger siden» (bare for deg) ── */
+.editFab {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 12px 30px -10px rgba(17, 18, 20, .5);
+}
+.editFab:hover { background: #2a2c31; }

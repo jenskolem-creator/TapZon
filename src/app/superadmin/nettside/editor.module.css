@@ -1,0 +1,45 @@
+.editor { display: flex; flex-direction: column; gap: 14px; }
+.group { font-size: 22px; margin-top: 18px; }
+.group:first-child { margin-top: 0; }
+
+.section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.section summary {
+  cursor: pointer; list-style: none; padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.section summary::-webkit-details-marker { display: none; }
+.section summary span { font-weight: 700; font-size: 16px; }
+.section summary span::after { content: " ▾"; color: var(--ink-soft); font-weight: 400; }
+.section:not([open]) summary span::after { content: " ▸"; }
+.section summary small { color: var(--ink-soft); font-size: 13px; }
+.section > .stack { padding: 0 20px 20px; }
+
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 600px) { .row2 { grid-template-columns: minmax(0, 1fr); } }
+
+.list { display: flex; flex-direction: column; gap: 12px; }
+.item { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; background: var(--surface-2); }
+.itemBar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.itemBar b { font-size: 14px; }
+.itemActions { display: flex; gap: 6px; }
+.itemActions button {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 6px;
+  padding: 4px 10px; font-size: 13px; font-weight: 600; color: var(--ink);
+}
+.itemActions button:disabled { opacity: .35; cursor: default; }
+.itemActions .remove { color: var(--danger); }
+.add {
+  align-self: flex-start; border: 1px dashed var(--line); background: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 14px; font-weight: 600; color: var(--accent);
+}
+.check { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.check input { width: 18px; height: 18px; }
+
+.saveBar {
+  position: sticky; bottom: 0; z-index: 2;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding-block: 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg); border-top: 1px solid var(--line);
+}
+.links { margin-left: auto; display: flex; gap: 16px; }

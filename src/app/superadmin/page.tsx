@@ -20,7 +20,10 @@ export default async function SuperadminPage() {
   return (
     <main className="wrap">
       <AdminHeader email={user.email} isAdmin />
-      <h1>Butikker</h1>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-end", marginBottom: 8 }}>
+        <h1>Butikker</h1>
+        <Link href="/superadmin/nettside" className="btn btn-ghost">Rediger nettsiden</Link>
+      </div>
       <p className="hint" style={{ marginBottom: 24 }}>
         Alle bedriftskunder på plattformen. En ny butikk er bare en ny rad, ingen ny kode.
       </p>

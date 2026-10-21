@@ -8,4 +8,5 @@ sudo -u postgres createdb "$DB"
 psql_db() { sudo -u postgres psql -q -t -v ON_ERROR_STOP=1 -d "$DB" "$@"; }
 psql_db -f test/supabase_stub.sql
 psql_db -f migrations/0001_init.sql
+psql_db -f migrations/0002_site_content.sql
 psql_db -f test/security_test.sql

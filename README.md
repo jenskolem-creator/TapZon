@@ -23,6 +23,7 @@ En ny butikk er bare nye rader i databasen. Ingen ny kode.
 
 1. Lag en gratis konto på [supabase.com](https://supabase.com) og et nytt prosjekt. Velg region **Stockholm** eller **Frankfurt**.
 2. Gå til **SQL Editor**, lim inn hele innholdet i `supabase/migrations/0001_init.sql` og trykk **Run**.
+   Gjør det samme med `supabase/migrations/0002_site_content.sql` (teksten på nettsiden).
 3. Gå til **Authentication → URL Configuration**:
    - **Site URL**: adressen siden skal ligge på, for eksempel `https://tapzon.no`. Mens du tester: Vercel-adressen, for eksempel `https://tapzon.vercel.app`.
    - **Redirect URLs**: legg til `https://DIN-ADRESSE/**`.
@@ -54,6 +55,11 @@ En ny butikk er bare nye rader i databasen. Ingen ny kode.
    Første gang de logger inn, må de lage sitt eget passord.
 4. Glemmer noen passordet: åpne butikken i `/superadmin` og trykk **Gi nytt midlertidig passord**.
 5. Kopier adressene fra butikksiden og skriv dem på NFC-kortene med appen **NFC Tools** (Write → Add a record → URL).
+
+## Redigere nettsiden
+
+Logg inn og gå til `/superadmin/nettside` (eller trykk **Rediger siden** nede i hjørnet når du er på forsiden).
+Der endrer du all tekst på forsiden og tjenestesiden, legger til eller fjerner tjenester og priser, og trykker **Lagre**.
 
 ## E-post (valgfritt, senere)
 

@@ -89,4 +89,23 @@ end $$;
 reset role;
 select pg_temp.check((select label from public.cards where id = 'cardBBBB') = '', 'A sin update på Bs kort endret ingenting');
 
+-- ── Nettsideinnhold ──
+insert into public.site_content (id, data) values ('main', '{"hero":{"title":"Hei"}}');
+set role anon;
+select pg_temp.check((select data->'hero'->>'title' from public.site_content) = 'Hei', 'alle kan lese nettsideinnholdet');
+do $$ begin
+  update public.site_content set data = '{}';
+  raise exception 'FEIL anon kunne endre nettsiden';
+exception when insufficient_privilege then raise notice 'OK   anon kan ikke endre nettsiden';
+end $$;
+reset role;
+set role authenticated;
+set request.jwt.claim.sub = '11111111-1111-1111-1111-111111111111';
+do $$ begin
+  update public.site_content set data = '{}';
+  raise exception 'FEIL butikkeier kunne endre nettsiden';
+exception when insufficient_privilege then raise notice 'OK   butikkeiere kan ikke endre nettsiden';
+end $$;
+reset role;
+
 \echo 'Alle tester bestått'
